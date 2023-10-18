@@ -2,7 +2,7 @@
 Automatically downloads DRM L3 Content, decrypts it and combines Video and Audio.
 
 # Requirements
-+ Python 3
++ Python 3 (Tested on 3.12.0)
 + mp4decrypt (bento4)
 + ffmpeg
 + WKS-KEYS (with working CDM)
