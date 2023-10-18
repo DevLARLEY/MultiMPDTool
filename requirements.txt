@@ -1,0 +1,3 @@
+xmltodict
+yt_dlp
+ffmpeg-python
