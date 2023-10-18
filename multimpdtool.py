@@ -351,6 +351,7 @@ def main():
 			print(pref.WARN + "Skipped " + t + ".")
 
 	#Combine files if 2 present
+	src = [r.replace('"', '') for r in src]
 	t = datetime.datetime.now()
 	out = (ident + '.{}-{}-{}_{}-{}-{}'.format(t.day, t.month, t.year, t.hour, t.minute, t.second) + '.mp4')
 	if len(src) == 2:
