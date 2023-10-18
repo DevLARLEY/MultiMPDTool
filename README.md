@@ -8,7 +8,7 @@ Automatically downloads DRM L3 Content, decrypts it and combines Video and Audio
 + WKS-KEYS (with working CDM)
 
 # Usage
-+ Install python modules: ´pip3 install -r requirements.txt´
++ Install python modules: `pip3 install -r requirements.txt`
 + Put all the requirements in the WKS-KEYS folder and run MultiMPDTool: `python3 multimpdtool.py`
 
 # Preview
