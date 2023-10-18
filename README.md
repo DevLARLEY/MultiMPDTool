@@ -10,3 +10,6 @@ Automatically downloads DRM L3 Content, decrypts it and combines Video and Audio
 # Usage
 Put all the requirements in the WKS-KEYS folder and run MultiMPDTool:
 `python3 multimpdtool.py`
+
+# Preview
+![MultiMPDTool Showcase](https://i.imgur.com/OuUtNUg.png)
