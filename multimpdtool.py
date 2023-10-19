@@ -1,16 +1,14 @@
 from os.path import exists
-import subprocess
+from subprocess import Popen, PIPE
 from pprint import pprint
-import requests, xmltodict, json
+import requests, xmltodict, json, urllib.request
 import yt_dlp.options
 import yt_dlp
 import ffmpeg
 import pathlib
 import datetime
-import math
-import uuid
-import sys
-import os
+import math, uuid
+import sys, os, re
 
 typ = 'Video'
 src = [None] * 2
@@ -38,24 +36,32 @@ class col:
     UNDERLINE = '\033[4m'
 
 class pref:
-	INFO = '[' + col.GREEN	 + 'INFO' + col.ENDC + '] '
+	INFO = '[' + col.GREEN + 'INFO' + col.ENDC + '] '
 	WARN = '[' + col.YELLOW + 'WARN' + col.ENDC + '] '
 	ERROR = '[' + col.RED + 'EROR' + col.ENDC + '] '
 
 # Credit: WKS-KEYS
 def getKeys(pssh, lic_url, cert_b64=None):
 	import base64, sys
-	import headers
+	try:
+		import headers
+	except Exception:
+		print(pref.ERROR + "Unable to parse headers.")
+		sys.exit()
 	from pywidevine.L3.cdm import cdm, deviceconfig
 	from base64 import b64encode
 	from pywidevine.L3.getPSSH import get_pssh
 	from pywidevine.L3.decrypt.wvdecryptcustom import WvDecrypt
-	wvdecrypt = WvDecrypt(init_data_b64=pssh, cert_data_b64=cert_b64, device=deviceconfig.device_android_generic)                   
-	widevine_license = requests.post(url=lic_url, data=wvdecrypt.get_challenge(), headers=headers.headers)
-	license_b64 = b64encode(widevine_license.content)
-	wvdecrypt.update_license(license_b64)
-	correct, keyswvdecrypt = wvdecrypt.start_process()
-	return correct, keyswvdecrypt
+	try:
+		wvdecrypt = WvDecrypt(init_data_b64=pssh, cert_data_b64=cert_b64, device=deviceconfig.device_android_generic)            
+		widevine_license = requests.post(url=lic_url, data=wvdecrypt.get_challenge(), headers=headers.headers)
+		license_b64 = b64encode(widevine_license.content)
+		wvdecrypt.update_license(license_b64)
+		correct, keyswvdecrypt = wvdecrypt.start_process()
+		return correct, keyswvdecrypt
+	except Exception:
+		print(pref.ERROR + "Unable to get Key(s).")
+		sys.exit()
 
 # Credit: https://github.com/medvm/widevine_keys/blob/main/getPSSH.py
 def getPSSH(mpd_url):
@@ -101,6 +107,23 @@ def getPSSH(mpd_url):
     except Exception:
         correct = False                   
     return correct, pssh
+
+def getPSSH2(mpd_url):
+	pssh = []
+	try:
+		name, headers = urllib.request.urlretrieve(mpd_url)
+	except Exception:
+		print(pref.ERROR + "Bad URL.")
+		sys.exit()
+	f = open(name, "r").read()
+	res = re.findall('<cenc:pssh.*>.*<.*/cenc:pssh>', f)
+	for r in res:
+		try:
+			r = r.split('>')[1].split('<')[0]
+			pssh.append(r)
+		except Exception:
+			pass
+	return min(pssh, key=len)
 
 def chooseSource():
 	s = input(pref.INFO + 'Select Input Type => (1) .mpd File, (2) Video/Audio Files ~: ')
@@ -273,11 +296,15 @@ def main():
 	if ch == 1:
 		mpd = queryForMPD()
 		correct, pssh = getPSSH(mpd)
-		if correct:
-			print(pref.INFO + "PSSH => " + pssh)
+		if correct and pssh != '':
+			print(pref.INFO + "PSSH => " + str(pssh))
 		else:
-			print(pref.ERROR + "Unable to extract PSSH.")
-			sys.exit()
+			pssh = getPSSH2(mpd)
+			if pssh != '':
+				print(pref.INFO + "PSSH => " + str(pssh))
+			else:
+				print(pref.ERROR + "Unable to extract PSSH.")
+				sys.exit()
 	elif ch == 2:
 		src = queryForMedia()
 	
@@ -292,7 +319,7 @@ def main():
 				clearHeaders()
 			keys = ''
 			correct, keyz = getKeys(pssh, lic)
-			if correct:
+			if correct and keyz:
 				for k in keyz:
 					keys += ' --key ' + k
 			else:
@@ -311,10 +338,11 @@ def main():
 			print(pref.ERROR + 'No Keys provided.')
 			sys.exit()
 
+	ident = str(uuid.uuid4())	
+
 	#Download mpd file
-	print(pref.INFO + 'Downloading .mpd file ...')
-	ident = str(uuid.uuid4())
 	if ch == 1:
+		print(pref.INFO + 'Downloading .mpd file ...')
 		ydl_opts = {
 		'allow_unplayable_formats': True,
 		'noprogress': True,
@@ -325,13 +353,16 @@ def main():
  		'outtmpl': {'default': ident + '.f%(format_id)s.%(ext)s'},
  		'progress_hooks': [log]
  		}
-		with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-			ydl.download(mpd)
-
-	print(pref.INFO + "Download successful.")
+		try:
+			with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+				ydl.download(mpd)
+		except Exception:
+			print(pref.ERROR + "Unable to download .mpd file.")
+			sys.exit()
+		print(pref.INFO + "Download successful.")
 
 	#Decrypt video and audio
-	print(pref.INFO + "Decrypting started.")
+	print(pref.INFO + "Decrypting ...")
 	for s in src:
 		i = src.index(s)
 		t = None
@@ -342,7 +373,11 @@ def main():
 		su = pathlib.Path(s).suffix
 		out = (ident + "." + t + su)
 		if s != '':
-			os.system("mp4decrypt.exe " + keys + ' ' + s + ' ' + out)
+			process = Popen("mp4decrypt.exe " + keys + ' ' + s + ' ' + out, stdout=PIPE, stderr=PIPE)
+			stdout, stderr = process.communicate()
+			if stderr.decode('utf-8'):
+				print(pref.ERROR + "Failed decrypting " + s + ": " + stderr.decode('utf-8'))
+				sys.exit()
 			print(pref.INFO + "Successfully decrypted " + t + '.')
 			src[i] = out
 			if os.path.exists(s):
