@@ -12,7 +12,7 @@ It's not perfect yet, i'm already working on a tool that dumps the exact informa
 
 # Usage
 + Install python modules: `pip3 install -r requirements.txt`
-+ Put all the requirements in the WKS-KEYS folder (with a working CDM) and run MultiMPDTool: `python3 multimpdtool.py`
++ Put all the requirements in the WKS-KEYS folder (with a working CDM in `WKS-KEYS\pywidevine\L3\cdm\devices\android_generic`) and run MultiMPDTool: `python3 multimpdtool.py`
 
 # Preview
 ![MultiMPDTool Showcase](https://i.imgur.com/OuUtNUg.png)
