@@ -18,7 +18,7 @@ def printLogo():
 	print(col.CYAN + "       ___ ___      ____     " + col.PURPLE + "___  __ _____ ______" + col.BLUE + " _______         __")
 	print(col.CYAN + "      /__//__/|    /_/_/|   " + col.PURPLE + "/__/ /_//____//_____/" + col.BLUE + "/______/|       /_/|")
 	print(col.CYAN + "      |  \\/  ||_  _| | ||(_)" + col.PURPLE + "|  \\/  |  __ \\|  __ \\" + col.BLUE + "__   __|/_  ____| ||")
-	print(col.CYAN + "      | \\  / |L/ /_| | |L/_|" + col.PURPLE + "| \\  / | |/_) | || | ||" + col.BLUE + "| ||___/|/___/| ||")
+	print(col.CYAN + "      | \\  / |L/ /_| | |L/_|" + col.PURPLE + "| \\  / | |/_) | || | ||" + col.BLUE + "| ||___/\\/___/| ||")
 	print(col.CYAN + "      | |\\/| | |_| | | __| |" + col.PURPLE + "| |\\/| |  ___/| ||_| ||" + col.BLUE + "| |/ _ \\// _ \\| ||")
 	print(col.CYAN + "      | || | | |_| | | |_| |" + col.PURPLE + "| || | | ||   | |/_| ||" + col.BLUE + "| | (_) | (_) | ||")
 	print(col.CYAN + "      |_|/ |_|\\__,_|_|\\__|_|" + col.PURPLE + "|_|/ |_|_|/   |_____// " + col.BLUE + "|_|\\___/ \\___/|_|/" + col.ENDC)
