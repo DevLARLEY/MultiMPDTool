@@ -15,13 +15,14 @@ src = [None] * 2
 
 def printLogo():
 	print()
-	print(col.CYAN + "      ___ ___      ____     " + col.PURPLE + " __  __ _____ ______" + col.BLUE + " _______         __")
-	print(col.CYAN + "     /__//__/|    /_/_/|   " + col.PURPLE + " /_/ /_//____//_____/" + col.BLUE + "/______/|       /_/|")
-	print(col.CYAN + "     |  \\/  ||_  _| | ||(_)" + col.PURPLE + "|  \\/  |  __ \\|  __ \\" + col.BLUE + "__   __|/_  ____| ||")
-	print(col.CYAN + "     | \\  / |L/ /_| | |L/_|" + col.PURPLE + "| \\  / | |/_) | || | ||" + col.BLUE + "| ||___/|/___/| ||")
-	print(col.CYAN + "     | |\\/| | |_| | | __| |" + col.PURPLE + "| |\\/| |  ___/| ||_| ||" + col.BLUE + "| |/ _ \\// _ \\| ||")
-	print(col.CYAN + "     | || | | |_| | | |_| |" + col.PURPLE + "| || | | ||   | |/_| ||" + col.BLUE + "| | (_) | (_) | ||")
-	print(col.CYAN + "     |_|/ |_|\\__,_|_|\\__|_|" + col.PURPLE + "|_|/ |_|_|/   |_____// " + col.BLUE + "|_|\\___/ \\___/|_|/" + col.ENDC)
+	print(col.CYAN + "       ___ ___      ____     " + col.PURPLE + "___  __ _____ ______" + col.BLUE + " _______         __")
+	print(col.CYAN + "      /__//__/|    /_/_/|   " + col.PURPLE + "/__/ /_//____//_____/" + col.BLUE + "/______/|       /_/|")
+	print(col.CYAN + "      |  \\/  ||_  _| | ||(_)" + col.PURPLE + "|  \\/  |  __ \\|  __ \\" + col.BLUE + "__   __|/_  ____| ||")
+	print(col.CYAN + "      | \\  / |L/ /_| | |L/_|" + col.PURPLE + "| \\  / | |/_) | || | ||" + col.BLUE + "| ||___/|/___/| ||")
+	print(col.CYAN + "      | |\\/| | |_| | | __| |" + col.PURPLE + "| |\\/| |  ___/| ||_| ||" + col.BLUE + "| |/ _ \\// _ \\| ||")
+	print(col.CYAN + "      | || | | |_| | | |_| |" + col.PURPLE + "| || | | ||   | |/_| ||" + col.BLUE + "| | (_) | (_) | ||")
+	print(col.CYAN + "      |_|/ |_|\\__,_|_|\\__|_|" + col.PURPLE + "|_|/ |_|_|/   |_____// " + col.BLUE + "|_|\\___/ \\___/|_|/" + col.ENDC)
+	print("                     (c) https://github.com/DevLARLEY")
 	print()
 
 class col:
@@ -123,7 +124,10 @@ def getPSSH2(mpd_url):
 			pssh.append(r)
 		except Exception:
 			pass
-	return min(pssh, key=len)
+	if pssh:
+		return min(pssh, key=len)
+	else:
+		return ''
 
 def chooseSource():
 	s = input(pref.INFO + 'Select Input Type => (1) .mpd File, (2) Video/Audio Files ~: ')
@@ -274,6 +278,7 @@ def log(d):
 
 # TODO
 #  + Add support for local .mpd files
+#  + If decrypting local files, give option to decrypt using PSSH and License URL
 
 def main():
 	printLogo()
@@ -303,8 +308,11 @@ def main():
 			if pssh != '':
 				print(pref.INFO + "PSSH => " + str(pssh))
 			else:
-				print(pref.ERROR + "Unable to extract PSSH.")
-				sys.exit()
+				pssh = input(pref.ERROR + "No PSSH found. Enter manually ~: ")
+				if pssh == '':
+					print(p.ERROR + "No PSSH was entered.")
+					sys.exit()
+		 # TODO also check here if PSSH is valid
 	elif ch == 2:
 		src = queryForMedia()
 	
