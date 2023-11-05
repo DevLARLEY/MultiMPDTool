@@ -1,6 +1,9 @@
 # MultiMPDTool
 Automatically downloads DRM L3 Content, decrypts it and combines Video and Audio.
 
+# PSSHBoxTool
+A tool for understading the PSSH can be found here: `https://github.com/DevLARLEY/PSSHBoxTool`
+
 # Requirements
 + Python 3 (Tested on 3.12.0)
 + mp4decrypt (bento4)
