@@ -1,9 +1,6 @@
 # MultiMPDTool
 Automatically downloads DRM L3 Content, decrypts it and combines Video and Audio.
 
-# mpdl
-An easier to understand and GUI-based version of this can be found here: [mpdl](https://github.com/DevLARLEY/mpdl)
-
 # PSSHBoxTool
 A tool for understading the PSSH can be found here: [PSSHBoxTool](https://github.com/DevLARLEY/PSSHBoxTool)
 
